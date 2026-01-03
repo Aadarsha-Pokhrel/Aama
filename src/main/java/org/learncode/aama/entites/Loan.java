@@ -8,8 +8,8 @@ import java.time.LocalDate;
 
 
 @Entity
-@Setter
 @Getter
+@Setter
 public class Loan {
 
     @Id
