@@ -22,15 +22,27 @@ public class LoanService {
     private NoticeRepo noticeRepo;
 
     public Notice createLoan(Long userId, LoanRequest loanRequest){
-        Optional<Users> user = userRepo.findById(userId);
-        Users users = user.get();
-        loanRequest.setUsers(users);
-        LoanRequest loanreq = loanRequestRepo.save(loanRequest);
-        Notice notice= new Notice();
-        notice.setType("Loan Request for Rs"+loanRequest.getAmount());
-        notice.setPurpose(loanRequest.getPurpose()+"  Status : "+loanRequest.getStatus());
-        return notice;
+        Users users = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // Check if the user already has a loan request
+        if (loanRequestRepo.findByUsers_UserID(userId) != null) {
+            throw new IllegalStateException("User already has a loan request");
+        }
+
+        // Set the user
+        loanRequest.setUsers(users);
+
+        // Save the loan request
+        LoanRequest savedLoanRequest = loanRequestRepo.save(loanRequest);
+
+        // Create a notice
+        Notice notice = new Notice();
+        notice.setType("Loan Request for Rs " + savedLoanRequest.getAmount());
+        notice.setPurpose(savedLoanRequest.getPurpose() + "  Status : " + savedLoanRequest.getStatus());
+        notice.setNoticeCreator(users.getName());
+
+        return notice;
     }
 
     public Notice approve(Long loanId,Long adminId){
@@ -41,6 +53,10 @@ public class LoanService {
             Notice noticeByPurpose = noticeRepo.getNoticeByPurpose(loanRequest.getPurpose() + "  Status : " + loanRequest.getStatus());
             loanRequest.setStatus("Approved");
             loanRequestRepo.save(loanRequest);
+            Loan loan= new Loan();
+            loan.setPrincipal(loanRequest.getAmount());
+            loan.setUsers(loanRequest.getUsers());
+            loanRepo.save(loan);
             noticeByPurpose.setPurpose(loanRequest.getPurpose() + "  Status : " + loanRequest.getStatus());
             Notice save = noticeRepo.save(noticeByPurpose);
             return save;

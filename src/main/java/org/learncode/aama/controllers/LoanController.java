@@ -2,38 +2,69 @@ package org.learncode.aama.controllers;
 
 import org.learncode.aama.entites.LoanRequest;
 import org.learncode.aama.entites.Notice;
+import org.learncode.aama.entites.UserPrincipal;
+import org.learncode.aama.entites.Users;
 import org.learncode.aama.service.LoanService;
 import org.learncode.aama.service.noticeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping()
 public class LoanController {
+
     @Autowired
     private LoanService loanService;
+
     @Autowired
     private noticeService noticeService;
 
-    @PostMapping("/loan-request/{id}")
-    public Notice createLoanRequest(@RequestBody LoanRequest loanRequest, @PathVariable("id") Long id){
 
-        Notice loan = loanService.createLoan(id, loanRequest);
-        Notice notice = noticeService.createNotice(loan);
+    @PostMapping("/loan-request")
+    public Notice createLoanRequest(@RequestBody LoanRequest loanRequest){
+        // Get authenticated user from JWT
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
+        Users user = principal.getUser();
+
+        // Create loan and notice
+        Notice loan = loanService.createLoan(user.getUserID(), loanRequest);
+        Notice notice = noticeService.createNotice(loan, user.getUserID());
         return notice;
     }
-    @PostMapping("/approve/{loanid}")
 
-    public Notice approveLoan(@PathVariable("loanid") Long loanid, @RequestParam("adminid") Long adminId){
-        adminId=1L;
-        Notice approve = loanService.approve(loanid, adminId);
-        return approve;
 
+    @PostMapping("/approve/{loanId}")
+    public Notice approveLoan(@PathVariable("loanId") Long loanId){
+        // Get admin user from JWT
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
+        Users admin = principal.getUser();
+
+        // Optional: check if admin has role
+        if(!admin.getRole().equalsIgnoreCase("ADMIN")) {
+            throw new RuntimeException("Only admins can approve loans");
+        }
+
+        return loanService.approve(loanId, admin.getUserID());
     }
-    @PostMapping("/reject/{loanid}")
-    public String rejectLoan(@PathVariable("loanid") Long loanid, @RequestParam("adminid") Long adminId){
-        adminId=1L;
-        loanService.reject(loanid, adminId);
-        return "Loan rejected";
 
+
+    @PostMapping("/reject/{loanId}")
+    public String rejectLoan(@PathVariable("loanId") Long loanId){
+        // Get admin user from JWT
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
+        Users admin = principal.getUser();
+
+        if(!admin.getRole().equalsIgnoreCase("ADMIN")) {
+            throw new RuntimeException("Only admins can reject loans");
+        }
+
+        loanService.reject(loanId, admin.getUserID());
+        return "Loan rejected";
     }
 }
+

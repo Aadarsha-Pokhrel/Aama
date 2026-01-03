@@ -1,5 +1,6 @@
 package org.learncode.aama.entites;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,7 @@ public class Deposit {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long despositId;
     @ManyToOne
+    @JsonBackReference
     private Users users;
     private String month;
     private Double amount;

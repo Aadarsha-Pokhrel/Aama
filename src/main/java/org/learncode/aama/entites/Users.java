@@ -1,8 +1,10 @@
 package org.learncode.aama.entites;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 
 import java.time.LocalDate;
@@ -12,6 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@Component
 public class Users {
     @Id
 @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,6 +25,7 @@ public class Users {
     private String phonenumber;
     private LocalDate createdAt=LocalDate.now();
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Deposit> deposit=new ArrayList<>();
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "users")
     private LoanRequest loanRequest;
