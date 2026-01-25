@@ -24,7 +24,7 @@ public class Users {
     private String role;
     private String phonenumber;
     private LocalDate createdAt=LocalDate.now();
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     @JsonManagedReference
     private List<Deposit> deposit=new ArrayList<>();
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "users")

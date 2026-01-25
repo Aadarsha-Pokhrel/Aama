@@ -1,5 +1,6 @@
 package org.learncode.aama.controllers;
 
+import org.learncode.aama.Dao.LoanRequestRepo;
 import org.learncode.aama.entites.LoanRequest;
 import org.learncode.aama.entites.Notice;
 import org.learncode.aama.entites.UserPrincipal;
@@ -12,6 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@CrossOrigin(origins ="http://localhost:5173")
 @RestController
 @RequestMapping()
 public class LoanController {
@@ -21,6 +25,9 @@ public class LoanController {
 
     @Autowired
     private noticeService noticeService;
+
+    @Autowired
+    private LoanRequestRepo loanRequestRepo;
 
 
     @PostMapping("/loan-request")
@@ -69,5 +76,23 @@ public class LoanController {
         loanService.reject(loanId, admin.getUserID());
         return "Loan rejected";
     }
+
+
+    @GetMapping("admin/loan-requests")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<LoanRequest> getAllLoanRequests() {
+        // Get admin user from JWT (optional - already checked by @PreAuthorize)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
+        Users admin = principal.getUser();
+
+        if (!admin.getRole().equalsIgnoreCase("ADMIN")) {
+            throw new RuntimeException("Only admins can view all loan requests");
+        }
+
+        return loanService.getAllLoanRequests();
+    }
+
+
 }
 
