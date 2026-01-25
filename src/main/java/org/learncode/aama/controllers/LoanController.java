@@ -7,6 +7,7 @@ import org.learncode.aama.entites.Users;
 import org.learncode.aama.service.LoanService;
 import org.learncode.aama.service.noticeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,8 @@ public class LoanController {
     }
 
 
-    @PostMapping("/approve/{loanId}")
+    @PostMapping("admin/approve/{loanId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Notice approveLoan(@PathVariable("loanId") Long loanId){
         // Get admin user from JWT
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -52,7 +54,8 @@ public class LoanController {
     }
 
 
-    @PostMapping("/reject/{loanId}")
+    @PostMapping("admin/reject/{loanId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String rejectLoan(@PathVariable("loanId") Long loanId){
         // Get admin user from JWT
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

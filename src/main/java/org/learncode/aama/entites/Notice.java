@@ -17,6 +17,7 @@ public class Notice {
     @Column(length=500)
     private String purpose;
     private String noticeCreator;
+    private Long loanid;
     private LocalDateTime createdAt=LocalDateTime.now();
 
 

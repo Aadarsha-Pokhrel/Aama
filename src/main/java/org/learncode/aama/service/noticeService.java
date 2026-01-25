@@ -47,6 +47,7 @@ public class noticeService {
             notice.setNotice_id(n.getNotice().getNotice_id());
             notice.setType(n.getNotice().getType());
             notice.setPurpose(n.getNotice().getPurpose());
+            notice.setNoticeCreator(n.getNotice().getNoticeCreator() );
             notices.add(notice);
         }
         return notices;

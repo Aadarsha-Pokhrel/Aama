@@ -28,7 +28,7 @@ public class NoticeController {
 
     }
 
-    @GetMapping("/notice")
+    @GetMapping("/notice" )
     public List<Notice> getNotice(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal principal = (UserPrincipal) auth.getPrincipal();

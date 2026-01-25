@@ -40,6 +40,7 @@ public class LoanService {
         Notice notice = new Notice();
         notice.setType("Loan Request for Rs " + savedLoanRequest.getAmount());
         notice.setPurpose(savedLoanRequest.getPurpose() + "  Status : " + savedLoanRequest.getStatus());
+        notice.setLoanid(loanRequest.getLoanReqId());
         notice.setNoticeCreator(users.getName());
 
         return notice;
