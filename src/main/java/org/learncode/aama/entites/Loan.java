@@ -1,6 +1,6 @@
 package org.learncode.aama.entites;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,8 +15,8 @@ public class Loan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"loan", "deposit", "loanRequest", "password"})  // Include user but ignore circular fields
     private Users users;
 
     private Double principal;
