@@ -120,6 +120,7 @@ public class LoanService {
         Users admin = userRepo.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
         LoanRequest byUsersUserID = loanRequestRepo.findByUsers_UserID(userID);
+
         if(byUsersUserID == null){
             throw  new RuntimeException("Invalid user id");
         }
@@ -138,6 +139,10 @@ public class LoanService {
 
         // Update loan status
         loan.setStatus("PAID");
+        //update notice
+        Notice noticeByPurpose = noticeRepo.getNoticeByPurpose(byUsersUserID.getPurpose() + "  Status : " + byUsersUserID.getStatus());
+        byUsersUserID.setStatus("PAID");
+        noticeRepo.save(noticeByPurpose);
         //update loan req status
         byUsersUserID.setStatus("PAID");
         loan.setRemainingBalance(0.0);
