@@ -120,5 +120,34 @@ public class LoanController {
     }
 
 
+    @PostMapping("admin/loans/{loanId}/mark-paid")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Loan markLoanAsPaid(@PathVariable("loanId") Long loanId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
+        Users admin = principal.getUser();
+
+        if (!admin.getRole().equalsIgnoreCase("ADMIN")) {
+            throw new RuntimeException("Only admins can mark loans as paid");
+        }
+
+        return loanService.markLoanAsPaid(loanId, admin.getUserID());
+    }
+
+    @GetMapping("admin/loans")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Loan> getAllLoans() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
+        Users admin = principal.getUser();
+
+        if (!admin.getRole().equalsIgnoreCase("ADMIN")) {
+            throw new RuntimeException("Only admins can view all loans");
+        }
+
+        return loanService.getAllLoans();
+    }
+
+
 }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class userService {
@@ -32,15 +33,21 @@ public class userService {
         Users user = userDao.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        List<Loan> loans = user.getLoan();
+        List<Loan> allLoans = user.getLoan();
+
+        // Filter only ACTIVE loans for statistics
+        List<Loan> activeLoans = allLoans.stream()
+                .filter(loan -> "ACTIVE".equals(loan.getStatus()))
+                .collect(Collectors.toList());
+
         LoanRequest loanRequest = user.getLoanRequest();
 
         // Handle empty loans safely
-        Loan firstLoan = loans.isEmpty() ? null : loans.get(0);
+        Loan firstLoan = activeLoans.isEmpty() ? null : activeLoans.get(0);
 
-        // Statistics
-        int loansTaken = loans.size();
-        double totalBorrowed = loans.stream()
+        // Statistics - only count ACTIVE loans
+        int loansTaken = activeLoans.size();
+        double totalBorrowed = activeLoans.stream()
                 .mapToDouble(loan -> loan.getPrincipal() != null ? loan.getPrincipal() : 0.0)
                 .sum();
 
@@ -50,7 +57,7 @@ public class userService {
         String status = firstLoan != null ? firstLoan.getStatus() : null;
         Double interestRate = firstLoan != null ? firstLoan.getInterestRate() : null;
         Integer durationMonths = firstLoan != null ? firstLoan.getDurationMonths() : null;
-        LocalDate startdate = firstLoan != null ? firstLoan.getStartDate(): null;
+        LocalDate startdate = firstLoan != null ? firstLoan.getStartDate() : null;
 
         return new MemberDashboardDto(
                 user.getUserID(),

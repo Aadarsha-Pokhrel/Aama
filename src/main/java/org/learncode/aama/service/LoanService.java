@@ -114,4 +114,33 @@ public class LoanService {
                 .filter(lr -> !"pending".equalsIgnoreCase(lr.getStatus()))
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    public Loan markLoanAsPaid(Long loanId, Long adminId) {
+        Users admin = userRepo.findById(adminId)
+                .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+
+        if (!"ADMIN".equalsIgnoreCase(admin.getRole())) {
+            throw new RuntimeException("Only admins can mark loans as paid");
+        }
+
+        Loan loan = loanRepo.findById(loanId)
+                .orElseThrow(() -> new IllegalArgumentException("Loan not found"));
+
+        // Check if loan is already paid
+        if ("PAID".equalsIgnoreCase(loan.getStatus())) {
+            throw new IllegalStateException("Loan is already marked as paid");
+        }
+
+        // Update loan status
+        loan.setStatus("PAID");
+        loan.setRemainingBalance(0.0);
+
+        // Save and return
+        return loanRepo.save(loan);
+    }
+
+    // Add this method for loan history (includes PAID loans)
+    public List<Loan> getAllLoans() {
+        return loanRepo.findAll();
+    }
 }
