@@ -116,9 +116,13 @@ public class LoanService {
                 .collect(java.util.stream.Collectors.toList());
     }
 
-    public Loan markLoanAsPaid(Long loanId, Long adminId) {
+    public Loan markLoanAsPaid(Long loanId, Long adminId, Long userID) {
         Users admin = userRepo.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+        LoanRequest byUsersUserID = loanRequestRepo.findByUsers_UserID(userID);
+        if(byUsersUserID == null){
+            throw  new RuntimeException("Invalid user id");
+        }
 
         if (!"ADMIN".equalsIgnoreCase(admin.getRole())) {
             throw new RuntimeException("Only admins can mark loans as paid");
@@ -134,7 +138,10 @@ public class LoanService {
 
         // Update loan status
         loan.setStatus("PAID");
+        //update loan req status
+        byUsersUserID.setStatus("PAID");
         loan.setRemainingBalance(0.0);
+        loanRequestRepo.save(byUsersUserID);
 
         // Save and return
         return loanRepo.save(loan);

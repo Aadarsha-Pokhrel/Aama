@@ -120,9 +120,9 @@ public class LoanController {
     }
 
 
-    @PostMapping("admin/loans/{loanId}/mark-paid")
+    @PostMapping("admin/loans/{loanId}/{userid}/mark-paid")
     @PreAuthorize("hasRole('ADMIN')")
-    public Loan markLoanAsPaid(@PathVariable("loanId") Long loanId) {
+    public Loan markLoanAsPaid(@PathVariable("loanId") Long loanId, @PathVariable("userid") Long userID) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
         Users admin = principal.getUser();
@@ -131,7 +131,7 @@ public class LoanController {
             throw new RuntimeException("Only admins can mark loans as paid");
         }
 
-        return loanService.markLoanAsPaid(loanId, admin.getUserID());
+        return loanService.markLoanAsPaid(loanId, admin.getUserID(), userID);
     }
 
     @GetMapping("admin/loans")
