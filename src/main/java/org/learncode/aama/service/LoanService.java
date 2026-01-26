@@ -141,10 +141,12 @@ public class LoanService {
         loan.setStatus("PAID");
         //update notice
         Notice noticeByPurpose = noticeRepo.getNoticeByPurpose(byUsersUserID.getPurpose() + "  Status : " + byUsersUserID.getStatus());
-        byUsersUserID.setStatus("PAID");
-        noticeRepo.save(noticeByPurpose);
+
         //update loan req status
         byUsersUserID.setStatus("PAID");
+        //update notice
+        noticeByPurpose.setPurpose((byUsersUserID.getPurpose() + "  Status : " + byUsersUserID.getStatus()));
+        noticeRepo.save(noticeByPurpose);
         loan.setRemainingBalance(0.0);
         loanRequestRepo.save(byUsersUserID);
 
