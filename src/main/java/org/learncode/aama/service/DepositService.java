@@ -103,7 +103,7 @@ public class DepositService {
     @Transactional
     public depositDto getDeposits(Long userID) {
         List<Deposit> deposits = depositRepo.getDepositsByUsersUserID(userID);
-        List<Loan> loan = loanRepo.getLoansById(userID);
+        List<Loan> loan = loanRepo.findByUsers_UserID(userID);
         double totalBurrowed = loan.stream()
                 .mapToDouble(loan1 -> loan1.getPrincipal() != null ? loan1.getPrincipal() : 0.0)
                 .sum();
