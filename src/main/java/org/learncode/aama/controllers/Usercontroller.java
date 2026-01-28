@@ -2,6 +2,7 @@ package org.learncode.aama.controllers;
 
 import org.learncode.aama.Dao.LoanRepo;
 import org.learncode.aama.Dao.UserRepo;
+import org.learncode.aama.Dto.ContactResponseDto;
 import org.learncode.aama.Dto.MemberDashboardDto;
 import org.learncode.aama.Dto.userDto;
 import org.learncode.aama.entites.UserPrincipal;
@@ -10,16 +11,19 @@ import org.learncode.aama.service.jwtService;
 import org.learncode.aama.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.learncode.aama.Dto.ContactDto;
 
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
-@CrossOrigin(origins ="http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173")
 public class Usercontroller {
     @Autowired
     private userService UserService;
@@ -33,7 +37,7 @@ public class Usercontroller {
     private UserRepo userRepo;
 
     @PostMapping("/register")
-    public Users registerUser(@RequestBody Users users){
+    public Users registerUser(@RequestBody Users users) {
         Users users1 = UserService.saveUser(users);
         return users1;
     }
@@ -52,9 +56,7 @@ public class Usercontroller {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             user.getUserID().toString(),
-                            loginDto.getPassword()
-                    )
-            );
+                            loginDto.getPassword()));
 
             if (authentication.isAuthenticated()) {
                 // Generate JWT token
@@ -75,6 +77,7 @@ public class Usercontroller {
             return ResponseEntity.status(401).body("Login Failed: " + e.getMessage());
         }
     }
+
     @GetMapping("/dashboard")
     public MemberDashboardDto dashboard() {
         // Get authenticated user from JWT
@@ -86,9 +89,12 @@ public class Usercontroller {
         return UserService.getMemberDashboardStats(user.getUserID());
     }
 
+    @GetMapping("/contacts")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ContactResponseDto getContacts() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
+        return UserService.getAllContacts(principal.getUser().getUserID());
+    }
 
 }
-
-
-
-
