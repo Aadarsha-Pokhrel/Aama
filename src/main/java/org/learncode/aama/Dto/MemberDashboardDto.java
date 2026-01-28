@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,7 +24,8 @@ public class MemberDashboardDto {
     private String status;
     private Double interestRate;
     private Integer durationMonths;
-    private LocalDate startdate;
+    private LocalDateTime startdate;
     private String role;
+    private Double totalDeposit;
 
 }

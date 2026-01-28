@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins ="http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping()
 public class LoanController {
@@ -33,7 +33,7 @@ public class LoanController {
 
 
     @PostMapping("/loan-request")
-    public Notice createLoanRequest(@RequestBody LoanRequest loanRequest){
+    public Notice createLoanRequest(@RequestBody LoanRequest loanRequest) {
         // Get authenticated user from JWT
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
@@ -48,17 +48,16 @@ public class LoanController {
 
     @PostMapping("admin/approve/{loanId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Notice approveLoan(@PathVariable("loanId") Long loanId){
+    public Notice approveLoan(@PathVariable("loanId") Long loanId) {
         // Get admin user from JWT
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
         Users admin = principal.getUser();
 
         // Optional: check if admin has role
-        if(!admin.getRole().equalsIgnoreCase("ADMIN")) {
+        if (!admin.getRole().equalsIgnoreCase("ADMIN")) {
             throw new RuntimeException("Only admins can approve loans");
         }
-
 
 
         return loanService.approve(loanId, admin.getUserID());
@@ -68,13 +67,13 @@ public class LoanController {
 
     @PostMapping("admin/reject/{loanId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String rejectLoan(@PathVariable("loanId") Long loanId){
+    public String rejectLoan(@PathVariable("loanId") Long loanId) {
         // Get admin user from JWT
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
         Users admin = principal.getUser();
 
-        if(!admin.getRole().equalsIgnoreCase("ADMIN")) {
+        if (!admin.getRole().equalsIgnoreCase("ADMIN")) {
             throw new RuntimeException("Only admins can reject loans");
         }
 
@@ -155,6 +154,7 @@ public class LoanController {
 
         return loanService.getAllLoans();
     }
+
     @GetMapping("/my-loan-history")
     public List<LoanRequest> getMyLoanHistory() {
         // Get authenticated user from JWT

@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Users {
     private String password;
     private String role;
     private String phonenumber;
-    private LocalDate createdAt=LocalDate.now();
+    private LocalDateTime createdAt=LocalDateTime.now();
 
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference

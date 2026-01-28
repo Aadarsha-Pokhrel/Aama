@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,7 +23,7 @@ public class Loan {
     private Double principal;
     private Double interestRate=5.0;
     private Integer durationMonths=1;
-    private LocalDate startDate = LocalDate.now();
+    private LocalDateTime startDate = LocalDateTime.now();
     private Double remainingBalance;
     private String status = "ACTIVE";
 }

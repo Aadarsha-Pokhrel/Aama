@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,5 +21,5 @@ public class Deposit {
     private String month;
     private Double amount;
     private String status="Paid";
-    private LocalDate createdAt= LocalDate.now();
+    private LocalDateTime createdAt= LocalDateTime.now();
 }

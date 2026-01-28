@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -16,7 +17,7 @@ public class LoanRequest {
     private Long loanReqId;
     private Double Amount;
     private String purpose;
-    private LocalDate createdAt=LocalDate.now();
+    private LocalDateTime createdAt=LocalDateTime.now();
     private String status="pending";
 
     // CHANGE: OneToOne -> ManyToOne

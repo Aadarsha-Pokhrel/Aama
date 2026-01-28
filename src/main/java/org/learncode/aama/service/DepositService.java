@@ -2,17 +2,18 @@ package org.learncode.aama.service;
 
 import jakarta.transaction.Transactional;
 import org.learncode.aama.Dao.DepositRepo;
+import org.learncode.aama.Dao.LoanRepo;
 import org.learncode.aama.Dao.UserRepo;
 import org.learncode.aama.Dao.budgetRepo;
-
 import org.learncode.aama.Dto.BudgetDto;
+import org.learncode.aama.Dto.depositDto;
 import org.learncode.aama.entites.BudgetTransaction;
 import org.learncode.aama.entites.Deposit;
+import org.learncode.aama.entites.Loan;
 import org.learncode.aama.entites.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,8 @@ public class DepositService {
     private UserRepo userRepo;
     @Autowired
     private budgetRepo budgetRepo;
+    @Autowired
+    private LoanRepo loanRepo;
 
     public void manageLoanrequest(Long userID, Double amount) {
         BudgetTransaction budget = budgetRepo.findBudgetTransactionByUsersUserID(userID);
@@ -95,6 +98,23 @@ public class DepositService {
 
 
 
+    }
+
+    @Transactional
+    public depositDto getDeposits(Long userID) {
+        List<Deposit> deposits = depositRepo.getDepositsByUsersUserID(userID);
+        List<Loan> loan = loanRepo.getLoansById(userID);
+        double totalBurrowed = loan.stream()
+                .mapToDouble(loan1 -> loan1.getPrincipal() != null ? loan1.getPrincipal() : 0.0)
+                .sum();
+        double totalDeposit = deposits.stream()
+                .mapToDouble(deposit -> deposit.getAmount() != null ? deposit.getAmount() : 0.0)
+                .sum();
+
+        return new depositDto(
+                totalDeposit,
+                totalBurrowed
+        );
     }
 }
 
